@@ -2,6 +2,7 @@
 import { AppShell, Burger, Code, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { NavbarSimple } from "./Navbar/Navbar";
+import Link from "next/link";
 
 function Demo({ children }) {
 	const [opened, { toggle }] = useDisclosure();
@@ -15,7 +16,9 @@ function Demo({ children }) {
 				<Group h="100%" px="md" className=" bg-gray-700 text-white">
 					<Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
 					{/* <MantineLogo size={30} /> */}
-					<div className="font-bold font-mono text-2xl ml-2">DOS DAO</div>
+					<Link href="/">
+						<div className="font-bold font-mono text-2xl ml-2">DOS DAO</div>
+					</Link>
 					{/* <ConnectButton /> */}
 				</Group>
 			</AppShell.Header>

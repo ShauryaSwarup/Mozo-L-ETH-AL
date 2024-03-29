@@ -1,17 +1,24 @@
 "use client";
-import {
-	Paper,
-	TextInput,
-	PasswordInput,
-	Checkbox,
-	Button,
-	Title,
-	Text,
-	Anchor,
-	Select,
-} from "@mantine/core";
+import { useState } from "react";
+import { Paper, TextInput, Button, Title, Text, Select } from "@mantine/core";
 import classes from "./AuthenticationImage.module.css";
-function page() {
+
+function Page() {
+	// State variables to store input values
+	const [name, setName] = useState("");
+	const [email, setEmail] = useState("");
+	const [university, setUniversity] = useState("");
+	const [occupation, setOccupation] = useState("");
+
+	// Function to handle form submission
+	const handleSubmit = () => {
+		// Log input values
+		console.log("Name:", name);
+		console.log("Email:", email);
+		console.log("Affiliated University:", university);
+		console.log("Occupation:", occupation);
+	};
+
 	return (
 		<div className={classes.wrapper}>
 			<Paper className={classes.form} radius={0} p={30}>
@@ -19,43 +26,47 @@ function page() {
 					Onboard yourself as a Researcher
 				</Title>
 
-				<TextInput label="Your name" placeholder="name" size="md" />
+				<TextInput
+					label="Your name"
+					placeholder="name"
+					size="md"
+					value={name}
+					onChange={(event) => setName(event.target.value)}
+				/>
 
 				<TextInput
 					label="Email address"
 					placeholder="hello@gmail.com"
 					size="md"
+					value={email}
+					onChange={(event) => setEmail(event.target.value)}
 				/>
+
 				<TextInput
 					label="Affiliated university"
 					placeholder="university"
 					size="md"
+					value={university}
+					onChange={(event) => setUniversity(event.target.value)}
 				/>
+
 				<Select
 					label="Your occupation"
 					size="md"
 					placeholder="Pick occupation"
 					data={["Student", "Post Grad", "Professor", "Scientist"]}
+					value={occupation}
+					onChange={(value) => setOccupation(value)}
 				/>
-				{/* <PasswordInput
-					label="Password"
-					placeholder="Your password"
-					mt="md"
-					size="md"
-				/> */}
-				{/* <Checkbox label="Keep me logged in" mt="xl" size="md" /> */}
-				<Button fullWidth mt="xl" size="md">
+
+				<Button fullWidth mt="xl" size="md" onClick={handleSubmit}>
 					Onboard
 				</Button>
 
-				<Text ta="center" mt="md">
-					{/* Don&apos;t have an account?{" "}
-					<Anchor href="#" fw={700} onClick={(event) => event.preventDefault()}>
-						Register
-					</Anchor> */}
-				</Text>
+				<Text ta="center" mt="md"></Text>
 			</Paper>
 		</div>
 	);
 }
-export default page;
+
+export default Page;

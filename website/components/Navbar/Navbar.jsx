@@ -11,6 +11,11 @@ import {
 	IconReceipt2,
 	IconSwitchHorizontal,
 	IconLogout,
+	IconUserCircle,
+	IconMessage,
+	IconLogin,
+	IconUpload,
+	IconFileLike,
 } from "@tabler/icons-react";
 // import { MantineLogo } from "@mantinex/mantine-logo";
 import classes from "./NavbarSimple.module.css";
@@ -18,21 +23,21 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 const data = [
-	{ link: "/data", label: "Data & Collaboration", icon: IconBellRinging },
-	{ link: "/proposals", label: "Proposals & Voting", icon: IconReceipt2 },
-	{ link: "/treasury", label: "DAO Treasury", icon: IconFingerprint },
-	{ link: "/incentives", label: "Reputation & Incentives", icon: IconKey },
+	{ link: "/data", label: "Data & Collaboration", icon: IconUpload },
+	{ link: "/proposals", label: "Proposals & Voting", icon: IconFileLike },
+	// { link: "/treasury", label: "DAO Treasury", icon: IconFingerprint },
+	{ link: "/incentives", label: "Reputation & Incentives", icon: IconReceipt2 },
 	{
 		link: "/communication",
 		label: "Community & Communication",
-		icon: IconDatabaseImport,
+		icon: IconMessage,
 	},
-	{ link: "/profile", label: "User Profile", icon: Icon2fa },
-	{ link: "/onboard", label: "Oboard as a Researcher", icon: IconSettings },
+	{ link: "/profile", label: "User Profile", icon: IconUserCircle },
+	{ link: "/onboard", label: "Oboard as a Researcher", icon: IconLogin },
 ];
 export function NavbarSimple() {
 	const pathname = usePathname();
-	
+
 	const links = data.map((item) => (
 		<Link
 			href={item.link}

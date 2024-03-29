@@ -1,54 +1,25 @@
 "use client";
 import { Card, Avatar, Text, Group, Button } from "@mantine/core";
-import classes from "./UserCardImage.module.css";
+import classes from "../UserCardImage.module.css";
 import { ProposalComp } from "@/components/ProposalsPage/ProposalComp";
 const stats = [
 	{ value: "3", label: "Projects" },
 	{ value: "5", label: "Contributions" },
 	{ value: "1.6ETH", label: "Incentives" },
 ];
-const profiles = [
-    {
-        profileId: 1,
-        walletId: "0x8Dc76B4a7bF0b9264aB10e614c787BeF",
-        name: "Alice Smith",
-        affiliation: "Tech Solutions Inc.",
-        email: "alice.smith@example.com",
-        university: "Stanford University",
-        profession: "Software Engineer",
-    },
-    {
-        profileId: 2,
-        walletId: "0x1F55351C93bEcA72Ef73595114c3b3f0",
-        name: "John Doe",
-        affiliation: "Research Institute",
-        email: "john.doe@example.com",
-        university: "Massachusetts Institute of Technology (MIT)",
-        profession: "Data Scientist",
-    },
-    {
-        profileId: 3,
-        walletId: "0x67292F8A2Bb3aE4245f906E2c065745D",
-        name: "Emily Johnson",
-        affiliation: "Healthcare Foundation",
-        email: "emily.johnson@example.com",
-        university: "Harvard University",
-        profession: "Medical Doctor",
-    },
-    {
-        profileId: 4,
-        walletId: "0x9a2dC340DFE2e42060780e0dA58Bc482",
-        name: "Michael Brown",
-        affiliation: "Finance Corporation",
-        email: "michael.brown@example.com",
-        university: "University of California, Berkeley",
-        profession: "Financial Analyst",
-    },
-];
 
-import data from "./data.json";
+import data from "../data.json";
+import profiles from "../profiles";
 
-function UserCardImage() {
+function UserCardImage(params) {
+	const walletId = params.params.walletId;
+	const findProfileByWalletId = (id) => {
+		return profiles.find((profile) => profile.walletId === id);
+	};
+	const profile = findProfileByWalletId(walletId);
+
+	console.log(walletId, profile);
+
 	const items = stats.map((stat) => (
 		<div key={stat.label}>
 			<Text ta="center" fz="lg" fw={500}>
@@ -84,13 +55,13 @@ function UserCardImage() {
 					className={classes.avatar}
 				/>
 				<Text ta="center" fz="lg" fw={500} mt="sm">
-					Bill Headbanger
+					{profile && profile.name}
 				</Text>
 				<Text ta="center" fz="sm">
-					Wallet address
+					{profile && profile.walletId}
 				</Text>
 				<Text ta="center" fz="sm" c="dimmed">
-					Researcher, University of smth
+					{profile && profile.profession}, {profile && profile.university}
 				</Text>
 				<Group mt="md" justify="center" gap={30}>
 					{items}

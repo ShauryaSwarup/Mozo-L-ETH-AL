@@ -1,0 +1,101 @@
+[
+	{
+		"proposal_id": 1,
+		"title": "Study on the Effects of Urbanization on Bird Populations",
+		"researcher_id": "researcher456",
+		"researcher_name": "Bob Johnson",
+		"researcher_affiliation": "Ecology Research Center",
+		"description": "This study aims to investigate how urbanization impacts bird populations...",
+		"funding_needed": 8000,
+		"duration": "9 months",
+		"impact": "Understanding the effects of urbanization on bird populations...",
+		"status": "approved",
+		"submission_date": "2024-03-25T09:00:00Z",
+		"voting_start_date": "2024-03-30T09:00:00Z",
+		"voting_end_date": "2024-04-06T09:00:00Z",
+		"votes": {
+			"total": 15,
+			"for": 12,
+			"against": 3
+		},
+		"comments": [
+			{
+				"user_id": "user789",
+				"username": "JaneDoe",
+				"comment": "Excellent proposal! I fully support this research endeavor.",
+				"date": "2024-03-26T14:15:00Z"
+			},
+			{
+				"user_id": "user101112",
+				"username": "MarkJohnson",
+				"comment": "I have reservations about the methodology. Can we discuss this further?",
+				"date": "2024-03-27T11:30:00Z"
+			}
+		],
+		"wallet_id": "0x1234567890AbCdEf"
+	},
+	{
+		"proposal_id": 2,
+		"title": "Investigation into Novel Therapeutic Targets for Alzheimer's Disease",
+		"researcher_id": "researcher789",
+		"researcher_name": "Emily Williams",
+		"researcher_affiliation": "Neuroscience Research Institute",
+		"description": "This research aims to identify potential therapeutic targets...",
+		"funding_needed": 15000,
+		"duration": "18 months",
+		"impact": "Identifying new therapeutic targets could lead to...",
+		"status": "pending",
+		"submission_date": "2024-03-20T08:30:00Z",
+		"voting_start_date": "2024-03-27T08:30:00Z",
+		"voting_end_date": "2024-04-03T08:30:00Z",
+		"votes": {
+			"total": 8,
+			"for": 5,
+			"against": 3
+		},
+		"comments": [
+			{
+				"user_id": "user456",
+				"username": "JohnDoe",
+				"comment": "Interesting proposal. I'm curious about the specific methodologies...",
+				"date": "2024-03-21T10:00:00Z"
+			}
+		],
+		"wallet_id": "0x9876543210EfAbCd"
+	},
+	{
+		"proposal_id": 3,
+		"title": "Exploring Genetic Basis of Rare Diseases",
+		"researcher_id": "researcher101112",
+		"researcher_name": "David Brown",
+		"researcher_affiliation": "Genetics Research Center",
+		"description": "This project aims to investigate the genetic factors underlying rare diseases...",
+		"funding_needed": 12000,
+		"duration": "14 months",
+		"impact": "Understanding the genetic basis of rare diseases could lead to improved diagnostics and treatments...",
+		"status": "rejected",
+		"submission_date": "2024-03-15T11:00:00Z",
+		"voting_start_date": "2024-03-22T11:00:00Z",
+		"voting_end_date": "2024-03-29T11:00:00Z",
+		"votes": {
+			"total": 10,
+			"for": 4,
+			"against": 6
+		},
+		"comments": [
+			{
+				"user_id": "user789",
+				"username": "JaneDoe",
+				"comment": "I have concerns about the feasibility of this project given its scope...",
+				"date": "2024-03-16T14:30:00Z"
+			},
+			{
+				"user_id": "user101112",
+				"username": "MarkJohnson",
+				"comment": "Thank you for your feedback. I'll address the feasibility concerns...",
+				"date": "2024-03-17T09:45:00Z"
+			}
+		],
+		"wallet_id": "0x2468013579AbCdEf"
+	}
+]
