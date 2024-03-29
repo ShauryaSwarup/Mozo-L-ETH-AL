@@ -28,8 +28,15 @@ const mockdata = {
 	],
 };
 export function ProposalComp({ proposal, noSection }) {
-	const { proposal_id, title, description, wallet_id, researcher_name } =
-		proposal;
+	const {
+		proposal_id,
+		title,
+		description,
+		researcher_name,
+		researcher,
+		votes,
+	} = proposal;
+	// console.log(votes);
 	const router = useRouter();
 	// const features = badges.map((badge) => (
 	// 	<Badge variant="light" key={badge.label} leftSection={badge.emoji}>
@@ -60,7 +67,7 @@ export function ProposalComp({ proposal, noSection }) {
 				{/* <Text mt="md" className={classes.label} c="dimmed">
 					Perfect for you, if you enjoy
 				</Text> */}
-				<AvatarComp researcher_name={researcher_name} wallet_id={wallet_id} />
+				<AvatarComp researcher_name={researcher_name} wallet_id={researcher} />
 
 				{/* <Group gap={7} mt={5}>
 					{features}
@@ -82,6 +89,7 @@ export function ProposalComp({ proposal, noSection }) {
 				</Button>
 				<ActionIcon variant="default" radius="md" size={36}>
 					<IconHeart className={classes.like} stroke={1.5} />
+					<Text className="px-1">{votes.toString()}</Text>
 				</ActionIcon>
 			</Group>
 
