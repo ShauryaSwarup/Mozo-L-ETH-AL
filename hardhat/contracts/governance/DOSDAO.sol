@@ -2,27 +2,24 @@
 // Compatible with OpenZeppelin Contracts ^5.0.0
 pragma solidity ^0.8.20;
 
+import "../DOSToken.sol";
+
 import "@openzeppelin/contracts/governance/Governor.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
-
 /// @custom:security-contact codingwithshaun@gmail.com
-contract DOSDAO is
-    Governor,
-    GovernorSettings,
-    GovernorCountingSimple,
-    GovernorVotes,
-    GovernorVotesQuorumFraction,
-    GovernorTimelockControl
+contract DOSDAO is Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorVotesQuorumFraction, GovernorTimelockControl
 {
     address public treasury_;
+    DOSToken public dost;
     constructor(
         IVotes _token,
         TimelockController _timelock,
-        address _treasury
+        address _treasury,
+        address _contracttoken
     )
         Governor("DOSDAO")
         GovernorSettings(0 /*  1 block */, 5 /* 3 minutes */, 0)
@@ -31,6 +28,7 @@ contract DOSDAO is
         GovernorTimelockControl(_timelock)
     {
         treasury_ = _treasury;
+        dost = DOSToken(_contracttoken);
     }
      uint256 public proposalCount; // proposal count
     uint256 public researcherCount; // researcher count
@@ -86,6 +84,7 @@ contract DOSDAO is
             _university,
             _profession
         );
+        dost.mint(_walletid, 100);
         researcherCount++;
     }
 
@@ -137,6 +136,7 @@ contract DOSDAO is
             false
         );
         proposalCount++;
+        dost.mint(msg.sender, 50);
         return proposalId;
     }
 
@@ -148,6 +148,7 @@ contract DOSDAO is
         );
         castVote(_proposalId, uint8(_choice));
         proposal.votes++;
+        dost.mint(msg.sender, 30);
         checkproposalvoter[_proposalId][msg.sender] = true;
     }
 

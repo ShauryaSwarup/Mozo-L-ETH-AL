@@ -1,36 +1,15 @@
 // SPDX-License-Identifier: MIT
-// Compatible with OpenZeppelin Contracts ^5.0.0
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
-interface DOSDAO {
-    function propose(
-        address[1] calldata targets,
-        uint256[1] calldata values,
-        bytes[1] calldata calldatas,
-        string calldata description
-    ) external returns (uint256 proposalId);
-
-    function castVote(uint256 proposalId, uint8 support) external returns (uint256);
-
-    function queue(
-        address[1] memory targets,
-        uint256[1] memory values,
-        bytes[1] memory calldatas,
-        bytes32 descriptionHash
-    ) external returns (uint256 proposalId);
-
-    function execute(uint256 proposalId) external;
-
-    function getProposalState(uint256 proposalId) external view returns (uint8);
-}
+import "./DOSToken.sol";
 
 contract ResearcherContract {
-    DOSDAO public dosdao;
     address public treasury_;
+    DOSToken public dost;
 
-    constructor(address _dosdao, address _treasury) {
-        dosdao = DOSDAO(_dosdao);
+    constructor(address _treasury, address _contracttoken) {
         treasury_ = _treasury;
+        dost = DOSToken(_contracttoken);
     }
 
     uint256 public proposalCount; // proposal count
@@ -51,6 +30,8 @@ contract ResearcherContract {
         uint256 grant; // proposal grant
         address researcher; // researcher struct
         uint256 votes; // total votes
+        uint256 yay; // total yay votes
+        uint256 nay; // total nay votes
         uint256 snapshot; // block number
         uint256 deadline; // block number
         uint256 status; // proposal status
@@ -58,10 +39,12 @@ contract ResearcherContract {
         bool executed; // executed status
     }
 
+    mapping(uint256 => Researcher) public researchIds; // researchIds mapping
     mapping(address => Researcher) public researchers; // researchers mapping
     mapping(uint256 => Proposal) public proposals; // proposals mapping
     mapping(uint256 => address[]) voters; // proposal voters mapping
     mapping(uint256 => mapping(address => bool)) public checkproposalvoter; // proposal votes mapping
+    mapping(uint256 => address[]) public proposalvoters; // proposal voters mapping
 
     // =================================================================================================
     // Proposal & Researcher Functions
@@ -87,6 +70,7 @@ contract ResearcherContract {
             _university,
             _profession
         );
+        dost.mint(_walletid, 100);
         researcherCount++;
     }
 
@@ -102,30 +86,19 @@ contract ResearcherContract {
         string memory _description,
         uint256 _grant,
         address _researcher
-    ) public {
+    ) public returns (uint256) {
         require(
             researchers[_researcher].walletid != address(0),
             "Researcher does not exist"
         );
-        uint256 proposalId = dosdao.propose(
-            [address(treasury_)],
-            [uint256(0)],
-            // function releaseFunds(address _payee, uint256 amount) public onlyOwner
-            [
-                abi.encodeWithSignature(
-                    "releaseFunds(address,uint256)",
-                    _researcher,
-                    _grant
-                )
-            ],
-            _title
-        );
-        proposals[proposalId] = Proposal(
-            proposalId,
+        proposals[proposalCount] = Proposal(
+            proposalCount,
             _title,
             _description,
             _grant,
             _researcher,
+            0,
+            0,
             0,
             block.number,
             block.number + 60,
@@ -134,6 +107,8 @@ contract ResearcherContract {
             false
         );
         proposalCount++;
+        dost.mint(msg.sender, 50);
+        return proposalCount;
     }
 
     function vote(uint256 _proposalId, uint256 _choice) public {
@@ -142,58 +117,60 @@ contract ResearcherContract {
             checkproposalvoter[_proposalId][msg.sender] == false,
             "You have already voted"
         );
-        dosdao.castVote(_proposalId, uint8(_choice));
+        require(block.number <= proposal.deadline, "Voting period has ended");
+        if (_choice == 0) {
+            proposal.nay += dost.balanceOf(msg.sender);
+        } else if (_choice == 1) {
+            proposal.yay += dost.balanceOf(msg.sender);
+        }
         proposal.votes++;
+        dost.mint(msg.sender, 30);
         checkproposalvoter[_proposalId][msg.sender] = true;
     }
 
     function queueProposal(uint256 _proposalId) public {
         Proposal storage proposal = proposals[_proposalId];
         require(
+            block.number > proposal.deadline,
+            "Voting period has not ended"
+        );
+        require(proposal.votes > 0, "Proposal has not been voted on");
+        require(
+            proposal.yay >= ((dost.totalSupply() * 3) / 100),
+            "Proposal has not been approved"
+        );
+        require(proposal.queued == false, "Proposal has already been queued");
+        require(
             proposal.executed == false,
             "Proposal has already been executed"
         );
-        dosdao.queue(
-            [address(treasury_)],
-            [uint256(0)],
-            [
-                abi.encodeWithSignature(
-                    "releaseFunds(address,uint256)",
-                    proposal.researcher,
-                    proposal.grant
-                )
-            ],
-            keccak256(abi.encodePacked(proposal.title))
-        );
+        proposal.queued = true;
     }
 
     function executeProposal(uint256 _proposalId) public {
         Proposal storage proposal = proposals[_proposalId];
-        
+        require(proposal.queued == true, "Proposal has not been queued");
         require(
             proposal.executed == false,
             "Proposal has already been executed"
         );
         proposal.executed = true;
+        (bool success, ) = address(treasury_).call(
+            abi.encodeWithSignature(
+                "releaseFunds(address,uint256)",
+                proposal.researcher,
+                proposal.grant
+            )
+        );
+        require(success, "Failed to execute proposal");
     }
 
-    function getProposal(
+    // Getter Functions
+
+    function getProposalById(
         uint256 _proposalId
     ) public view returns (Proposal memory) {
         return proposals[_proposalId];
-    }
-
-    function getResearcher(
-        address _walletAddress
-    ) public view returns (Researcher memory) {
-        return researchers[_walletAddress];
-    }
-
-    function getVoters(
-        uint256 _proposalId,
-        address _voter
-    ) public view returns (bool) {
-        
     }
 
     function getProposalCount() public view returns (uint256) {
@@ -202,5 +179,33 @@ contract ResearcherContract {
 
     function getResearcherCount() public view returns (uint256) {
         return researcherCount;
+    }
+
+    function getResearcherByAddress(
+        address _walletAddress
+    ) public view returns (Researcher memory) {
+        return researchers[_walletAddress];
+    }
+
+    function getProposalVoters(
+        uint256 _proposalId
+    ) public view returns (address[] memory) {
+        return proposalvoters[_proposalId];
+    }
+
+    function getAllProposals() public view returns (Proposal[] memory) {
+        Proposal[] memory _proposals = new Proposal[](proposalCount);
+        for (uint256 i = 0; i < proposalCount; i++) {
+            _proposals[i] = proposals[i];
+        }
+        return _proposals;
+    }
+
+    function getAllResearchers() public view returns (Researcher[] memory) {
+        Researcher[] memory _researchers = new Researcher[](researcherCount);
+        for (uint256 i = 0; i < researcherCount; i++) {
+            _researchers[i] = researchers[researchIds[i].walletid];
+        }
+        return _researchers;
     }
 }
