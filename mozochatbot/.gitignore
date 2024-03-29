@@ -1,0 +1,15 @@
+# env file
+.env
+
+#Virtual Env
+env/
+
+#vector store
+faiss/
+
+#quantized model
+models/
+
+#data
+data/
+
