@@ -34,17 +34,18 @@ contract ResearcherContract {
         uint256 nay; // total nay votes
         uint256 snapshot; // block number
         uint256 deadline; // block number
-        uint256 status; // proposal status
         bool queued; // executed status
         bool executed; // executed status
     }
 
     mapping(uint256 => Researcher) public researchIds; // researchIds mapping
     mapping(address => Researcher) public researchers; // researchers mapping
+
     mapping(uint256 => Proposal) public proposals; // proposals mapping
     mapping(uint256 => address[]) voters; // proposal voters mapping
     mapping(uint256 => mapping(address => bool)) public checkproposalvoter; // proposal votes mapping
     mapping(uint256 => address[]) public proposalvoters; // proposal voters mapping
+    mapping(address => Proposal[]) public researcherProposals; // researcher proposals mapping
 
     // =================================================================================================
     // Proposal & Researcher Functions
@@ -102,7 +103,6 @@ contract ResearcherContract {
             0,
             block.number,
             block.number + 60,
-            1,
             false,
             false
         );
@@ -165,7 +165,36 @@ contract ResearcherContract {
         require(success, "Failed to execute proposal");
     }
 
+    // State Functions
+    function isVotingPeriod(uint256 _proposalId) public view returns (bool) {
+        return block.number <= proposals[_proposalId].deadline;
+    }
+    function isApproved(uint256 _proposalId) public view returns (bool) {
+        return proposals[_proposalId].yay >= ((dost.totalSupply() * 3) / 100);
+    }
+    function isQueued(uint256 _proposalId) public view returns (bool) {
+        return proposals[_proposalId].queued;
+    }
+    function isExecuted(uint256 _proposalId) public view returns (bool) {
+        return proposals[_proposalId].executed;
+    }
+
     // Getter Functions
+    function getSnapshot(uint256 _proposalId) public view returns (uint256) {
+        return proposals[_proposalId].snapshot;
+    }
+
+    function getDeadline(uint256 _proposalId) public view returns (uint256) {
+        return proposals[_proposalId].deadline;
+    }
+
+    function getCurrentBlock() public view returns (uint256) {
+        return block.number;
+    }
+
+    function getProposalCount() public view returns (uint256) {
+        return proposalCount;
+    }
 
     function getProposalById(
         uint256 _proposalId
@@ -173,18 +202,10 @@ contract ResearcherContract {
         return proposals[_proposalId];
     }
 
-    function getProposalCount() public view returns (uint256) {
-        return proposalCount;
-    }
-
-    function getResearcherCount() public view returns (uint256) {
-        return researcherCount;
-    }
-
-    function getResearcherByAddress(
-        address _walletAddress
-    ) public view returns (Researcher memory) {
-        return researchers[_walletAddress];
+    function getProposalsByResearcher(
+        address _researcher
+    ) public view returns (Proposal[] memory) {
+        return researcherProposals[_researcher];
     }
 
     function getProposalVoters(
@@ -199,6 +220,16 @@ contract ResearcherContract {
             _proposals[i] = proposals[i];
         }
         return _proposals;
+    }
+
+    function getResearcherCount() public view returns (uint256) {
+        return researcherCount;
+    }
+
+    function getResearcherByAddress(
+        address _walletAddress
+    ) public view returns (Researcher memory) {
+        return researchers[_walletAddress];
     }
 
     function getAllResearchers() public view returns (Researcher[] memory) {
