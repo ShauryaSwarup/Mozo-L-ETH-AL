@@ -12,12 +12,13 @@ function LeaderboardComp() {
 		error,
 		isPending,
 	} = useReadContract({
-		account: account,
+		account: account.address,
 		address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
 		abi: RC.abi,
 		functionName: "getAllResearchers",
 		// args: [jobId],
 	});
+	console.log(researchers);
 
 	if (isPending) return <div>Loading...</div>;
 	if (error)

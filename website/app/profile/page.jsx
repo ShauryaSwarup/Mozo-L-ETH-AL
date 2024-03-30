@@ -37,10 +37,19 @@ function UserCardImage() {
 	const tokenDataN = Number(tokenData) / Number(Math.pow(10, 18));
 	console.log(tokenDataN);
 	const stats = [
-		{ value: "3", label: "Projects" },
-		{ value: "5", label: "Contributions" },
+		// { value: "3", label: "Projects" },
+		// { value: "5", label: "Contributions" },
 		{ value: tokenDataN, label: "Tokens" },
 	];
+
+	const { data: proposals } = useReadContract({
+		account: account,
+		address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+		abi: RC.abi,
+		functionName: "getProposalsByResearcher",
+		args: [account.address],
+	});
+	console.log(proposals);
 
 	console.log(researcherData);
 	const items = stats.map((stat) => (
