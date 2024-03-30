@@ -19,7 +19,7 @@ contract ResearcherContract {
         address walletid;
         string name;
         string affiliation;
-        string emaill;
+        string email;
         string university;
         string profession;
     }
@@ -55,7 +55,7 @@ contract ResearcherContract {
         address _walletid,
         string memory _name,
         string memory _affiliation,
-        string memory _emaill,
+        string memory _email,
         string memory _university,
         string memory _profession
     ) public {
@@ -67,7 +67,7 @@ contract ResearcherContract {
             _walletid,
             _name,
             _affiliation,
-            _emaill,
+            _email,
             _university,
             _profession
         );
