@@ -13,6 +13,8 @@
     "@mantine/core": "^7.7.0",
     "@mantine/hooks": "^7.7.0",
     "@mantine/tiptap": "^7.7.0",
+    "@polybase/client": "^0.6.6",
+    "@polybase/react": "^0.6.6",
     "@pushprotocol/restapi": "^1.7.2",
     "@pushprotocol/socket": "^0.5.3",
     "@rainbow-me/rainbowkit": "^2.0.4",

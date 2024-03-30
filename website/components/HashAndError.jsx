@@ -13,30 +13,30 @@ function HashAndError({
 		<div className="rounded p-4">
 			<div>
 				{hash && (
-					<div className="truncate font-bold  border text-center rounded-xl p-2">
+					<div className="truncate bg-gray-700 font-bold text-white border text-center rounded-xl p-2">
 						Transaction Hash: {hash}
 					</div>
 				)}
 				{processing && (
-					<div className="truncate font-bold text-info border text-center rounded-xl p-2">
+					<div className="truncate bg-gray-700 font-bold text-white text-info border text-center rounded-xl p-2">
 						Storing in Polybase
-						<span className="loading loading-dots mx-4 loading-m text-info"></span>
+						<span className="loading loading-dots mx-4 text-white loading-m text-info"></span>
 					</div>
 				)}
 				{failed && (
-					<div className="text-alert font-bold  border text-center rounded-xl p-2">
+					<div className="text-alert bg-gray-700 font-bold text-white border text-center rounded-xl p-2">
 						Failed storing in Polybase
 					</div>
 				)}
 				{processed && (
-					<div className="truncate font-bold  text-success border text-center rounded-xl p-2">
+					<div className="truncate bg-gray-700 font-bold text-white text-success border text-center rounded-xl p-2">
 						Stored in Polybase
 					</div>
 				)}
 				{isConfirming && (
-					<div className="text-info font-bold  text-center border rounded-xl p-2">
+					<div className="text-info bg-gray-700 font-bold text-white text-center border rounded-xl p-2">
 						Waiting for confirmation
-						<span className="loading loading-dots mx-4 loading-m text-info"></span>
+						<span className="loading loading-dots mx-4 text-whiteloading-m text-info"></span>
 					</div>
 				)}
 				{isConfirmed && (
@@ -45,7 +45,7 @@ function HashAndError({
 					</div>
 				)}
 				{error && (
-					<div className="text-alert font-bold text-center border rounded-xl p-2">
+					<div className="text-alert bg-gray-700 text-white font-bold text-center border rounded-xl p-2">
 						{error.shortMessage || error.message}
 					</div>
 				)}

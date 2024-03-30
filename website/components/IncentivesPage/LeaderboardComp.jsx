@@ -12,7 +12,7 @@ function LeaderboardComp() {
 		error,
 		isPending,
 	} = useReadContract({
-		account: account.address,
+		account: account,
 		address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
 		abi: RC.abi,
 		functionName: "getAllResearchers",

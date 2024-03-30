@@ -5,207 +5,228 @@ import classes from "./BadgeCard.module.css";
 import { AvatarComp } from "../Avatar/AvatarComp";
 import { useRouter } from "next/navigation";
 import {
-	useAccount,
-	useReadContract,
-	useWaitForTransactionReceipt,
-	useWriteContract,
+    useAccount,
+    useReadContract,
+    useWaitForTransactionReceipt,
+    useWriteContract,
 } from "wagmi";
 import { useState } from "react";
 import HashAndError from "../HashAndError";
 import { RC } from "@/contracts/ResearcherContract";
+import polybaseSigner from "@/functions/polybaseSigner";
+import { polybase } from "@/data/polybase/polybase";
 
 export function ProposalComp({ proposal, noSection }) {
-	const { proposal_id, title, description, researcher, yay, nay } = proposal;
+    const account = useAccount();
+    if (account.connector) polybaseSigner(account);
+    const [polyProposal, setProposal] = useState();
+    const proposalReference = polybase.collection("Proposal");
 
-	const address = useAccount();
-	const [choice, setChoice] = useState();
+    const handleDiscussion = async (proposal) => {
+        if (proposal) {
+            console.log(proposal.researcher, proposal.title);
+            const recordData = await proposalReference
+                .where("title", "==", `${proposal.title}`)
+                .get();
+            const { data } = recordData;
+            console.log(data[0].data);
+            router.push(`/communication/${data[0].data.chatId}`);
+        }
+    };
 
-	const yayN = Number(yay) / Number(Math.pow(10, 18));
-	const nayN = Number(nay) / Number(Math.pow(10, 18));
+    const [choice, setChoice] = useState();
 
-	const router = useRouter();
-	const handleClick = () => {
-		router.push(`/proposals/${proposal_id}`);
-	};
+    const yayN = Number(proposal.yay) / Number(Math.pow(10, 18));
+    const nayN = Number(proposal.nay) / Number(Math.pow(10, 18));
 
-	//read researcher by address
-	const {
-		data: researcherData,
-		errorRead,
-		isPendingRead,
-	} = useReadContract({
-		account: address,
-		address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-		abi: RC.abi,
-		functionName: "getResearcherByAddress",
-		args: [researcher],
-	});
+    const router = useRouter();
+    const handleClick = () => {
+        router.push(`/proposals/${proposal.id.toString()}`);
+    };
 
-	//write contract getResearcherByAddress
+    //read researcher by address
+    const {
+        data: researcherData,
+        errorRead,
+        isPendingRead,
+    } = useReadContract({
+        account: account.address,
+        address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+        abi: RC.abi,
+        functionName: "getResearcherByAddress",
+        args: [proposal.researcher],
+    });
 
-	const { data: hash, error, isPending, writeContract } = useWriteContract();
-	function submit(e, choiceValue) {
-		e.preventDefault();
-		console.log("Hello", choiceValue, proposal.id);
-		writeContract({
-			address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-			abi: RC.abi,
-			functionName: "vote",
-			args: [proposal.id, choiceValue],
-		});
-	}
-	const { isLoading: isConfirming, isSuccess: isConfirmed } =
-		useWaitForTransactionReceipt({
-			hash,
-		});
+    //write contract getResearcherByAddress
 
-	//write contract queueProposal
+    const { data: hash, error, isPending, writeContract } = useWriteContract();
+    function submit(e, choiceValue) {
+        e.preventDefault();
+        console.log("Hello", choiceValue, proposal.id);
+        writeContract({
+            address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+            abi: RC.abi,
+            functionName: "vote",
+            args: [proposal.id, choiceValue],
+        });
+    }
+    const { isLoading: isConfirming, isSuccess: isConfirmed } =
+        useWaitForTransactionReceipt({
+            hash,
+        });
 
-	const { data: hash1, error1, isPending1 } = useWriteContract();
+    //write contract queueProposal
 
-	function submitQueue(e) {
-		e.preventDefault(); // Prevent default form submission behavior
-		writeContract({
-			address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-			abi: RC.abi,
-			functionName: "queueProposal",
-			args: [proposal.id],
-		});
-	}
+    const { data: hash1, error1, isPending1 } = useWriteContract();
 
-	const { isLoading: isConfirming1, isSuccess: isConfirmed1 } =
-		useWaitForTransactionReceipt({
-			hash,
-		});
+    function submitQueue(e) {
+        e.preventDefault(); // Prevent default form submission behavior
+        writeContract({
+            address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+            abi: RC.abi,
+            functionName: "queueProposal",
+            args: [proposal.id],
+        });
+    }
 
-	//is it queued or not
+    const { isLoading: isConfirming1, isSuccess: isConfirmed1 } =
+        useWaitForTransactionReceipt({
+            hash,
+        });
 
-	const { data: isQueuedProposal } = useReadContract({
-		address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-		abi: RC.abi,
-		functionName: "isQueued",
-		args: [proposal.id],
-	});
+    //is it queued or not
 
-	console.log(isQueuedProposal, proposal.id);
+    const { data: isQueuedProposal } = useReadContract({
+        address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+        abi: RC.abi,
+        functionName: "isQueued",
+        args: [proposal.id],
+    });
 
-	//execute
+    console.log(isQueuedProposal, proposal.id);
 
-	function execute(e) {
-		e.preventDefault();
-		writeContract({
-			address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-			abi: RC.abi,
-			functionName: "executeProposal",
-			args: [proposal.id],
-		});
-	}
+    //execute
 
-	const isQueued = isQueuedProposal ? isQueuedProposal[0] : false;
+    function execute(e) {
+        e.preventDefault();
+        writeContract({
+            address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+            abi: RC.abi,
+            functionName: "executeProposal",
+            args: [proposal.id],
+        });
+    }
 
-	//is executed
-	const { data: isExecutedProposal } = useReadContract({
-		address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-		abi: RC.abi,
-		functionName: "isExecuted",
-		args: [proposal.id],
-	});
+    const isQueued = isQueuedProposal ? isQueuedProposal[0] : false;
 
-	// const isExecuted = isExecutedProposal ? isExecutedProposal[0] : false;
+    //is executed
+    const { data: isExecutedProposal } = useReadContract({
+        address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+        abi: RC.abi,
+        functionName: "isExecuted",
+        args: [proposal.id],
+    });
 
-	const actionButton = isExecutedProposal ? null : isQueuedProposal ? (
-		<Button onClick={execute} radius="md" color="gray" style={{ flex: 1 }}>
-			Execute
-		</Button>
-	) : (
-		<form onSubmit={submitQueue}>
-			<Button type="submit" radius="md" color="gray" style={{ flex: 1 }}>
-				Queue Proposal
-			</Button>
-		</form>
-	);
+    // const isExecuted = isExecutedProposal ? isExecutedProposal[0] : false;
 
-	const cardClassName = isExecutedProposal
-		? classes.executedCard
-		: isQueuedProposal
-		? classes.queuedCard
-		: classes.card;
+    const actionButton = isExecutedProposal ? null : isQueuedProposal ? (
+        <Button onClick={execute} radius='md' color='gray' style={{ flex: 1 }}>
+            Execute
+        </Button>
+    ) : (
+        <form onSubmit={submitQueue}>
+            <Button type='submit' radius='md' color='gray' style={{ flex: 1 }}>
+                Queue Proposal
+            </Button>
+        </form>
+    );
 
-	return (
-		<Card withBorder radius="md" p="md" className={cardClassName}>
-			<Card.Section className={classes.section} mt="md">
-				<Group justify="apart">
-					<Text fz="lg" fw={500}>
-						{title}{" "}
-					</Text>
-					{isQueuedProposal && (
-						<Badge size="sm" variant="dark">
-							queued
-						</Badge>
-					)}
-					{isExecutedProposal && (
-						<Badge size="sm" variant="dark">
-							executed
-						</Badge>
-					)}
-				</Group>
-				<Text fz="sm" mt="xs">
-					{description}
-				</Text>
-			</Card.Section>
+    const cardClassName = isExecutedProposal
+        ? classes.executedCard
+        : isQueuedProposal
+        ? classes.queuedCard
+        : classes.card;
 
-			<Card.Section className={classes.section}>
-				{/* <Text mt="md" className={classes.label} c="dimmed">
+    return (
+        <Card withBorder radius='md' p='md' className={cardClassName}>
+            <Card.Section className={classes.section} mt='md'>
+                <Group justify='apart'>
+                    <Text fz='lg' fw={500}>
+                        {proposal.title}{" "}
+                    </Text>
+                    {isQueuedProposal && (
+                        <Badge size='sm' variant='dark'>
+                            queued
+                        </Badge>
+                    )}
+                    {isExecutedProposal && (
+                        <Badge size='sm' variant='dark'>
+                            executed
+                        </Badge>
+                    )}
+                </Group>
+                <Text fz='sm' mt='xs'>
+                    {proposal.description}
+                </Text>
+            </Card.Section>
+
+            <Card.Section className={classes.section}>
+                {/* <Text mt="md" className={classes.label} c="dimmed">
 					Perfect for you, if you enjoy
 				</Text> */}
-				<AvatarComp
-					researcher_name={researcherData && researcherData.name}
-					wallet_id={researcher}
-				/>
-			</Card.Section>
-			<Group mt="xs">
-				{!noSection && (
-					<Button
-						radius="md"
-						color="gray"
-						style={{ flex: 1 }}
-						onClick={handleClick}
-					>
-						Show details
-					</Button>
-				)}
-				<Button radius="md" color="gray" style={{ flex: 1 }}>
-					Join discussion
-				</Button>
-				{/* <form onSubmit={submitQueue}> */}
-				{actionButton}
-				{/* </form> */}
+                <AvatarComp
+                    researcher_name={researcherData && researcherData.name}
+                    wallet_id={proposal.researcher}
+                />
+            </Card.Section>
+            <Group mt='xs'>
+                {!noSection && (
+                    <Button
+                        radius='md'
+                        color='gray'
+                        style={{ flex: 1 }}
+                        onClick={handleClick}
+                    >
+                        Show details
+                    </Button>
+                )}
+                <Button
+                    radius='md'
+                    onClick={async () => await handleDiscussion(proposal)}
+                    color='gray'
+                    style={{ flex: 1 }}
+                >
+                    Join discussion
+                </Button>
+                {/* <form onSubmit={submitQueue}> */}
+                {actionButton}
+                {/* </form> */}
 
-				<form onSubmit={(e) => submit(e, 1)} className="flex gap-2">
-					<Button type="submit">
-						<IconThumbUp />
-						<Text className="px-1">{yayN.toString()}</Text>
-					</Button>
-				</form>
-				<form onSubmit={(e) => submit(e, 0)} className="flex gap-2">
-					<Button type="submit" onClick={() => setChoice(0)}>
-						<IconThumbDown />
-						<Text className="px-1">{nayN.toString()}</Text>
-					</Button>
-				</form>
-			</Group>
-			<HashAndError
-				hash={hash1}
-				isConfirming={isConfirming1}
-				isConfirmed={isConfirmed1}
-				error={error1}
-			/>
-			<HashAndError
-				hash={hash}
-				isConfirming={isConfirming}
-				isConfirmed={isConfirmed}
-				error={error}
-			/>
-		</Card>
-	);
+                <form onSubmit={(e) => submit(e, 1)} className='flex gap-2'>
+                    <Button type='submit'>
+                        <IconThumbUp />
+                        <Text className='px-1'>{yayN.toString()}</Text>
+                    </Button>
+                </form>
+                <form onSubmit={(e) => submit(e, 0)} className='flex gap-2'>
+                    <Button type='submit' onClick={() => setChoice(0)}>
+                        <IconThumbDown />
+                        <Text className='px-1'>{nayN.toString()}</Text>
+                    </Button>
+                </form>
+            </Group>
+            <HashAndError
+                hash={hash1}
+                isConfirming={isConfirming1}
+                isConfirmed={isConfirmed1}
+                error={error1}
+            />
+            <HashAndError
+                hash={hash}
+                isConfirming={isConfirming}
+                isConfirmed={isConfirmed}
+                error={error}
+            />
+        </Card>
+    );
 }
