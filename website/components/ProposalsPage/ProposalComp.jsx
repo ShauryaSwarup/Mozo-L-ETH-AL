@@ -1,32 +1,19 @@
-import { IconHeart } from "@tabler/icons-react";
-import {
-	Card,
-	Image,
-	Text,
-	Group,
-	Badge,
-	Button,
-	ActionIcon,
-} from "@mantine/core";
+"use client";
+import { IconHeart, IconThumbDown, IconThumbUp } from "@tabler/icons-react";
+import { Card, Text, Group, Button } from "@mantine/core";
 import classes from "./BadgeCard.module.css";
 import { AvatarComp } from "../Avatar/AvatarComp";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-const mockdata = {
-	image:
-		"https://images.unsplash.com/photo-1437719417032-8595fd9e9dc6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=80",
-	title: "Verudela Beach",
-	country: "Croatia",
-	description:
-		"Completely renovated for the season 2020, Arena Verudela Bech Apartments are fully equipped and modernly furnished 4-star self-service apartments located on the Adriatic coastline by one of the most beautiful beaches in Pula.",
-	badges: [
-		{ emoji: "☀️", label: "Sunny weather" },
-		{ emoji: "🦓", label: "Onsite zoo" },
-		{ emoji: "🌊", label: "Sea" },
-		{ emoji: "🌲", label: "Nature" },
-		{ emoji: "🤽", label: "Water sports" },
-	],
-};
+import {
+	useAccount,
+	useReadContract,
+	useWaitForTransactionReceipt,
+	useWriteContract,
+} from "wagmi";
+import { useState } from "react";
+import HashAndError from "../HashAndError";
+import { RC } from "@/contracts/ResearcherContract";
+
 export function ProposalComp({ proposal, noSection }) {
 	const {
 		proposal_id,
@@ -34,24 +21,53 @@ export function ProposalComp({ proposal, noSection }) {
 		description,
 		researcher_name,
 		researcher,
-		votes,
+		yay,
+		nay,
 	} = proposal;
-	// console.log(votes);
+
+	const address = useAccount();
+	const [choice, setChoice] = useState();
+
+	const yayN = Number(yay) / Number(Math.pow(10, 18));
+	const nayN = Number(nay) / Number(Math.pow(10, 18));
+
 	const router = useRouter();
-	// const features = badges.map((badge) => (
-	// 	<Badge variant="light" key={badge.label} leftSection={badge.emoji}>
-	// 		{badge.label}
-	// 	</Badge>
-	// ));
 	const handleClick = () => {
 		router.push(`/proposals/${proposal_id}`);
 	};
+
+	//read researcher by address
+	const {
+		data: researcherData,
+		errorRead,
+		isPendingRead,
+	} = useReadContract({
+		account: address,
+		address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+		abi: RC.abi,
+		functionName: "getResearcherByAddress",
+		args: [researcher],
+	});
+
+	//write contract getResearcherByAddress
+
+	const { data: hash, error, isPending, writeContract } = useWriteContract();
+	function submit(e) {
+		e.preventDefault();
+		writeContract({
+			address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+			abi: RC.abi,
+			functionName: "vote",
+			args: [proposal.proposalId, choice],
+		});
+	}
+	const { isLoading: isConfirming, isSuccess: isConfirmed } =
+		useWaitForTransactionReceipt({
+			hash,
+		});
+
 	return (
 		<Card withBorder radius="md" p="md" className={classes.card}>
-			{/* <Card.Section>
-				<Image src={image} alt={title} height={180} />
-			</Card.Section> */}
-
 			<Card.Section className={classes.section} mt="md">
 				<Group justify="apart">
 					<Text fz="lg" fw={500}>
@@ -67,11 +83,10 @@ export function ProposalComp({ proposal, noSection }) {
 				{/* <Text mt="md" className={classes.label} c="dimmed">
 					Perfect for you, if you enjoy
 				</Text> */}
-				<AvatarComp researcher_name={researcher_name} wallet_id={researcher} />
-
-				{/* <Group gap={7} mt={5}>
-					{features}
-				</Group> */}
+				<AvatarComp
+					researcher_name={researcherData && researcherData.name}
+					wallet_id={researcher}
+				/>
 			</Card.Section>
 			<Group mt="xs">
 				{!noSection && (
@@ -87,12 +102,21 @@ export function ProposalComp({ proposal, noSection }) {
 				<Button radius="md" color="gray" style={{ flex: 1 }}>
 					Join discussion
 				</Button>
-				<ActionIcon variant="default" radius="md" size={36}>
-					<IconHeart className={classes.like} stroke={1.5} />
-					<Text className="px-1">{votes.toString()}</Text>
-				</ActionIcon>
+				<Button onSubmit={submit} onClick={() => setChoice(1)}>
+					<IconThumbUp />
+					<Text className="px-1">{yayN.toString()}</Text>
+				</Button>
+				<Button onSubmit={submit} onClick={() => setChoice(0)}>
+					<IconThumbDown />
+					<Text className="px-1">{nayN.toString()}</Text>
+				</Button>
 			</Group>
-
+			<HashAndError
+				hash={hash}
+				isConfirming={isConfirming}
+				isConfirmed={isConfirmed}
+				error={error}
+			/>
 			{/* <Badge size="sm" variant="light">
 				{wallet_id}
 			</Badge> */}

@@ -1,71 +1,50 @@
 "use client";
 import { PersonalStatsComp } from "@/components/IncentivesPage/PersonalStatsComp";
+import { RC } from "@/contracts/ResearcherContract";
 import { Avatar, Badge, Table, Group, Text, Select } from "@mantine/core";
-const data = [
-	{
-		avatar:
-			"https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-9.png",
-		name: "Robert Wolfkisser",
-		job: "Engineer",
-		email: "rob_wolf@gmail.com",
-		role: "Collaborator",
-		lastActive: "2 days ago",
-		active: true,
-	},
-	{
-		avatar:
-			"https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-6.png",
-		name: "Jill Jailbreaker",
-		job: "Engineer",
-		email: "jj@breaker.com",
-		role: "Collaborator",
-		lastActive: "6 days ago",
-		active: true,
-	},
-	{
-		avatar:
-			"https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-10.png",
-		name: "Henry Silkeater",
-		job: "Designer",
-		email: "henry@silkeater.io",
-		role: "Contractor",
-		lastActive: "2 days ago",
-		active: false,
-	},
-	{
-		avatar:
-			"https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png",
-		name: "Bill Horsefighter",
-		job: "Designer",
-		email: "bhorsefighter@gmail.com",
-		role: "Contractor",
-		lastActive: "5 days ago",
-		active: true,
-	},
-	{
-		avatar:
-			"https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png",
-		name: "Jeremy Footviewer",
-		job: "Manager",
-		email: "jeremy@foot.dev",
-		role: "Manager",
-		lastActive: "3 days ago",
-		active: false,
-	},
-];
+import { useAccount, useReadContract } from "wagmi";
 const rolesData = ["Manager", "Collaborator", "Contractor"];
+
 function LeaderboardComp() {
-	const rows = data.map((item) => (
+	const account = useAccount();
+
+	const {
+		data: researchers,
+		error,
+		isPending,
+	} = useReadContract({
+		account: account,
+		address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+		abi: RC.abi,
+		functionName: "getAllResearchers",
+		// args: [jobId],
+	});
+
+	if (isPending) return <div>Loading...</div>;
+	if (error)
+		return (
+			<div>
+				{error && (
+					<span>
+						Error:{" "}
+						{(error instanceof BaseError && error.shortMessage) ||
+							error.message}
+					</span>
+				)}
+			</div>
+		);
+
+	const rows = researchers.map((item) => (
 		<Table.Tr key={item.name}>
 			<Table.Td>
 				<Group gap="sm">
-					<Avatar size={40} src={item.avatar} radius={40} />
+					{/* <Avatar size={40} src={item.avatar} radius={40} /> */}
 					<div>
 						<Text fz="sm" fw={500}>
 							{item.name}
 						</Text>
 						<Text fz="xs" c="dimmed">
-							{item.email}
+							{item.walletId}
 						</Text>
 					</div>
 				</Group>
@@ -74,14 +53,14 @@ function LeaderboardComp() {
 			<Table.Td>
 				<Select
 					data={rolesData}
-					defaultValue={item.role}
+					defaultValue={item.occupation}
 					variant="unstyled"
 					allowDeselect={false}
 				/>
 			</Table.Td>
-			<Table.Td>{item.lastActive}</Table.Td>
+			{/* <Table.Td>{item.lastActive}</Table.Td> */}
 			<Table.Td>
-				{item.active ? (
+				{/* {item.active ? (
 					<Badge fullWidth variant="light">
 						Active
 					</Badge>
@@ -89,7 +68,7 @@ function LeaderboardComp() {
 					<Badge color="gray" fullWidth variant="light">
 						Disabled
 					</Badge>
-				)}
+				)} */}
 			</Table.Td>
 		</Table.Tr>
 	));

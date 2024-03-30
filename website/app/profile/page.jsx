@@ -2,53 +2,47 @@
 import { Card, Avatar, Text, Group, Button } from "@mantine/core";
 import classes from "./UserCardImage.module.css";
 import { ProposalComp } from "@/components/ProposalsPage/ProposalComp";
-const stats = [
-	{ value: "3", label: "Projects" },
-	{ value: "5", label: "Contributions" },
-	{ value: "1.6ETH", label: "Incentives" },
-];
-const profiles = [
-    {
-        profileId: 1,
-        walletId: "0x8Dc76B4a7bF0b9264aB10e614c787BeF",
-        name: "Alice Smith",
-        affiliation: "Tech Solutions Inc.",
-        email: "alice.smith@example.com",
-        university: "Stanford University",
-        profession: "Software Engineer",
-    },
-    {
-        profileId: 2,
-        walletId: "0x1F55351C93bEcA72Ef73595114c3b3f0",
-        name: "John Doe",
-        affiliation: "Research Institute",
-        email: "john.doe@example.com",
-        university: "Massachusetts Institute of Technology (MIT)",
-        profession: "Data Scientist",
-    },
-    {
-        profileId: 3,
-        walletId: "0x67292F8A2Bb3aE4245f906E2c065745D",
-        name: "Emily Johnson",
-        affiliation: "Healthcare Foundation",
-        email: "emily.johnson@example.com",
-        university: "Harvard University",
-        profession: "Medical Doctor",
-    },
-    {
-        profileId: 4,
-        walletId: "0x9a2dC340DFE2e42060780e0dA58Bc482",
-        name: "Michael Brown",
-        affiliation: "Finance Corporation",
-        email: "michael.brown@example.com",
-        university: "University of California, Berkeley",
-        profession: "Financial Analyst",
-    },
-];
 
 import data from "./data.json";
+import { useAccount, useReadContract } from "wagmi";
+import { RC } from "@/contracts/ResearcherContract";
+import { DT } from "@/contracts/DOSToken";
 
 function UserCardImage() {
+	const account = useAccount();
+	const {
+		data: researcherData,
+		// error,
+		// isPending,
+	} = useReadContract({
+		account: account,
+		address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+		abi: RC.abi,
+		functionName: "getResearcherByAddress",
+		args: [account.address],
+	});
+
+	//for tokens NEXT_PUBLIC_CONTRACT_DOS_ADDRESS
+	const {
+		data: tokenData,
+		// error,
+		// isPending,
+	} = useReadContract({
+		account: account,
+		address: process.env.NEXT_PUBLIC_CONTRACT_DOS_ADDRESS,
+		abi: DT.abi,
+		functionName: "balanceOf",
+		args: [account.address],
+	});
+	const tokenDataN = Number(tokenData) / Number(Math.pow(10, 18));
+	console.log(tokenDataN);
+	const stats = [
+		{ value: "3", label: "Projects" },
+		{ value: "5", label: "Contributions" },
+		{ value: tokenDataN, label: "Tokens" },
+	];
+
+	console.log(researcherData);
 	const items = stats.map((stat) => (
 		<div key={stat.label}>
 			<Text ta="center" fz="lg" fw={500}>
@@ -84,13 +78,14 @@ function UserCardImage() {
 					className={classes.avatar}
 				/>
 				<Text ta="center" fz="lg" fw={500} mt="sm">
-					Bill Headbanger
+					{researcherData && researcherData.name}
 				</Text>
 				<Text ta="center" fz="sm">
-					Wallet address
+					{researcherData && researcherData.walletId}
 				</Text>
 				<Text ta="center" fz="sm" c="dimmed">
-					Researcher, University of smth
+					{researcherData && researcherData.profession},{" "}
+					{researcherData && researcherData.university}
 				</Text>
 				<Group mt="md" justify="center" gap={30}>
 					{items}

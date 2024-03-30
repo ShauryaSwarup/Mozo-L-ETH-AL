@@ -10,7 +10,7 @@ import { BaseError } from "viem";
 function page() {
 	const address = useAccount();
 	const {
-		data: proposals,
+		data : proposals,
 		error,
 		isPending,
 	} = useReadContract({
@@ -33,7 +33,7 @@ function page() {
 				)}
 			</div>
 		);
-	console.log(proposals);
+	console.log("Hi", proposals);
 	return (
 		<div>
 			<p className=" text-center font-bold text-3xl">Proposals</p>
