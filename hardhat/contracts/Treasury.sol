@@ -9,7 +9,9 @@ contract Treasury is Ownable {
     constructor() Ownable(msg.sender) payable {
         totalFunds = msg.value;
     }
-
+    function addFunds() public payable {
+        totalFunds += msg.value;
+    }
     function releaseFunds(address _payee, uint256 amount) public onlyOwner {
         payable(_payee).transfer(amount);
     }
