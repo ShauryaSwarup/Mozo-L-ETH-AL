@@ -7,7 +7,6 @@ const rolesData = ["Manager", "Collaborator", "Contractor"];
 
 function LeaderboardComp() {
 	const account = useAccount();
-
 	const {
 		data: researchers,
 		error,

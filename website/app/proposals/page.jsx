@@ -33,7 +33,6 @@ function page() {
 				)}
 			</div>
 		);
-	console.log("Hi", proposals);
 	return (
 		<div>
 			<p className=" text-center font-bold text-3xl">Proposals</p>

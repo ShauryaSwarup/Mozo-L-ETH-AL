@@ -1,6 +1,6 @@
 "use client";
 import { IconHeart, IconThumbDown, IconThumbUp } from "@tabler/icons-react";
-import { Card, Text, Group, Button } from "@mantine/core";
+import { Card, Text, Group, Button, Badge } from "@mantine/core";
 import classes from "./BadgeCard.module.css";
 import { AvatarComp } from "../Avatar/AvatarComp";
 import { useRouter } from "next/navigation";
@@ -15,15 +15,7 @@ import HashAndError from "../HashAndError";
 import { RC } from "@/contracts/ResearcherContract";
 
 export function ProposalComp({ proposal, noSection }) {
-	const {
-		proposal_id,
-		title,
-		description,
-		researcher_name,
-		researcher,
-		yay,
-		nay,
-	} = proposal;
+	const { proposal_id, title, description, researcher, yay, nay } = proposal;
 
 	const address = useAccount();
 	const [choice, setChoice] = useState();
@@ -52,13 +44,14 @@ export function ProposalComp({ proposal, noSection }) {
 	//write contract getResearcherByAddress
 
 	const { data: hash, error, isPending, writeContract } = useWriteContract();
-	function submit(e) {
+	function submit(e, choiceValue) {
 		e.preventDefault();
+		console.log("Hello", choiceValue, proposal.id);
 		writeContract({
 			address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
 			abi: RC.abi,
 			functionName: "vote",
-			args: [proposal.proposalId, choice],
+			args: [proposal.id, choiceValue],
 		});
 	}
 	const { isLoading: isConfirming, isSuccess: isConfirmed } =
@@ -66,13 +59,95 @@ export function ProposalComp({ proposal, noSection }) {
 			hash,
 		});
 
+	//write contract queueProposal
+
+	const { data: hash1, error1, isPending1 } = useWriteContract();
+
+	function submitQueue(e) {
+		e.preventDefault(); // Prevent default form submission behavior
+		writeContract({
+			address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+			abi: RC.abi,
+			functionName: "queueProposal",
+			args: [proposal.id],
+		});
+	}
+
+	const { isLoading: isConfirming1, isSuccess: isConfirmed1 } =
+		useWaitForTransactionReceipt({
+			hash,
+		});
+
+	//is it queued or not
+
+	const { data: isQueuedProposal } = useReadContract({
+		address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+		abi: RC.abi,
+		functionName: "isQueued",
+		args: [proposal.id],
+	});
+
+	console.log(isQueuedProposal, proposal.id);
+
+	//execute
+
+	function execute(e) {
+		e.preventDefault();
+		writeContract({
+			address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+			abi: RC.abi,
+			functionName: "executeProposal",
+			args: [proposal.id],
+		});
+	}
+
+	const isQueued = isQueuedProposal ? isQueuedProposal[0] : false;
+
+	//is executed
+	const { data: isExecutedProposal } = useReadContract({
+		address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+		abi: RC.abi,
+		functionName: "isExecuted",
+		args: [proposal.id],
+	});
+
+	// const isExecuted = isExecutedProposal ? isExecutedProposal[0] : false;
+
+	const actionButton = isExecutedProposal ? null : isQueuedProposal ? (
+		<Button onClick={execute} radius="md" color="gray" style={{ flex: 1 }}>
+			Execute
+		</Button>
+	) : (
+		<form onSubmit={submitQueue}>
+			<Button type="submit" radius="md" color="gray" style={{ flex: 1 }}>
+				Queue Proposal
+			</Button>
+		</form>
+	);
+
+	const cardClassName = isExecutedProposal
+		? classes.executedCard
+		: isQueuedProposal
+		? classes.queuedCard
+		: classes.card;
+
 	return (
-		<Card withBorder radius="md" p="md" className={classes.card}>
+		<Card withBorder radius="md" p="md" className={cardClassName}>
 			<Card.Section className={classes.section} mt="md">
 				<Group justify="apart">
 					<Text fz="lg" fw={500}>
-						{title}
+						{title}{" "}
 					</Text>
+					{isQueuedProposal && (
+						<Badge size="sm" variant="dark">
+							queued
+						</Badge>
+					)}
+					{isExecutedProposal && (
+						<Badge size="sm" variant="dark">
+							executed
+						</Badge>
+					)}
 				</Group>
 				<Text fz="sm" mt="xs">
 					{description}
@@ -102,24 +177,35 @@ export function ProposalComp({ proposal, noSection }) {
 				<Button radius="md" color="gray" style={{ flex: 1 }}>
 					Join discussion
 				</Button>
-				<Button onSubmit={submit} onClick={() => setChoice(1)}>
-					<IconThumbUp />
-					<Text className="px-1">{yayN.toString()}</Text>
-				</Button>
-				<Button onSubmit={submit} onClick={() => setChoice(0)}>
-					<IconThumbDown />
-					<Text className="px-1">{nayN.toString()}</Text>
-				</Button>
+				{/* <form onSubmit={submitQueue}> */}
+				{actionButton}
+				{/* </form> */}
+
+				<form onSubmit={(e) => submit(e, 1)} className="flex gap-2">
+					<Button type="submit">
+						<IconThumbUp />
+						<Text className="px-1">{yayN.toString()}</Text>
+					</Button>
+				</form>
+				<form onSubmit={(e) => submit(e, 0)} className="flex gap-2">
+					<Button type="submit" onClick={() => setChoice(0)}>
+						<IconThumbDown />
+						<Text className="px-1">{nayN.toString()}</Text>
+					</Button>
+				</form>
 			</Group>
+			<HashAndError
+				hash={hash1}
+				isConfirming={isConfirming1}
+				isConfirmed={isConfirmed1}
+				error={error1}
+			/>
 			<HashAndError
 				hash={hash}
 				isConfirming={isConfirming}
 				isConfirmed={isConfirmed}
 				error={error}
 			/>
-			{/* <Badge size="sm" variant="light">
-				{wallet_id}
-			</Badge> */}
 		</Card>
 	);
 }
