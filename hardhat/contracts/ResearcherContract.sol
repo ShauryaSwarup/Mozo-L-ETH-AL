@@ -71,6 +71,14 @@ contract ResearcherContract {
             _university,
             _profession
         );
+        researchIds[researcherCount] = Researcher(
+            _walletid,
+            _name,
+            _affiliation,
+            _email,
+            _university,
+            _profession
+        );
         dost.mint(_walletid, 100);
         researcherCount++;
     }
@@ -106,6 +114,7 @@ contract ResearcherContract {
             false,
             false
         );
+        researcherProposals[_researcher].push(proposals[proposalCount]);
         proposalCount++;
         dost.mint(msg.sender, 50);
         return proposalCount;
@@ -235,7 +244,7 @@ contract ResearcherContract {
     function getAllResearchers() public view returns (Researcher[] memory) {
         Researcher[] memory _researchers = new Researcher[](researcherCount);
         for (uint256 i = 0; i < researcherCount; i++) {
-            _researchers[i] = researchers[researchIds[i].walletid];
+            _researchers[i] = researchIds[i];
         }
         return _researchers;
     }
