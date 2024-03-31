@@ -15,11 +15,9 @@
 <!--     <br />
       <a href="https://l-eth-al.vercel.app/"><strong>Explore the website »</strong></a> -->
     <br />
-  HackHaven 1.0 || Team L(ETH)AL.
+  Mozohack 5.0 || Team L(ETH)AL.
 </div>
 <hr>
-
-**Theme:** Web3, Ethereum-Polygon, Push Protocol.
 
 The DOS DAO is a platform where researchers can securely store their data and collaborate easily. It allows them to discuss issues, ask questions about research papers, and track their contributions. Through a leaderboard, contributors are rewarded for their input, ensuring accurate records and effective communication.
 <details>
@@ -46,7 +44,7 @@ The DOS DAO is a platform where researchers can securely store their data and co
 
 ## Features
 - Decentralized database for secure data storage
-- P2P image storage for research materials
+- P2P image and file storage for research materials
 - Group chat functionality for issue discussion
 - Chatbot for research paper Q&A
 - Leaderboard to showcase contributions and rewards
@@ -97,36 +95,41 @@ The DOS DAO is a platform where researchers can securely store their data and co
 
 ## Screenshots
 #### Home page
-<img width="960" alt="Screenshot 2024-03-21 225150" src="https://github.com/narayanibokde9/HackHaven-LETHAL/assets/116104916/5b739076-ceb9-4c2a-8ddd-2d9a46c4a0be">
+![image](https://github.com/ShauryaSwarup/Mozo-L-ETH-AL/assets/116101909/08acf6bf-9172-493d-8d55-f7faa31bb09a)
 
-#### Verify as a Resident/Govt Employee
-<img width="960" alt="Screenshot 2024-03-21 225823" src="https://github.com/narayanibokde9/HackHaven-LETHAL/assets/116104916/0efd815c-3d70-44c1-be8e-24207c0810cd">
+#### Onboard yourself as a Researcher
+![image](https://github.com/ShauryaSwarup/Mozo-L-ETH-AL/assets/116101909/fdfd7b98-2ec9-4089-8bb8-656116f14157)
 
-#### Successful transaction as well as storage in Polybase
-<img width="959" alt="Screenshot 2024-03-21 225914" src="https://github.com/narayanibokde9/HackHaven-LETHAL/assets/116104916/8e8e9210-b204-4757-a322-7d9ed0574fce">
+#### Proposal Submission (File upload to IPFS & Data storage in Polybase)
+![image](https://github.com/ShauryaSwarup/Mozo-L-ETH-AL/assets/116101909/8d707e97-706e-4d9c-826b-e9fc1818cf39)
 
 #### Profile page
-<img width="960" alt="Screenshot 2024-03-21 230046" src="https://github.com/narayanibokde9/HackHaven-LETHAL/assets/116104916/ca61f33c-3e7c-45b8-b256-c860d6f65c79">
+![image](https://github.com/ShauryaSwarup/Mozo-L-ETH-AL/assets/116101909/1d9a9f43-9814-40a4-bd78-1feff5d4a90d)
 
-#### Raise an issue
-<img width="960" alt="Screenshot 2024-03-21 230305" src="https://github.com/narayanibokde9/HackHaven-LETHAL/assets/116104916/05d8ca05-b273-4467-8094-1792a6a9bd14">
-<img width="960" alt="Screenshot 2024-03-21 230326" src="https://github.com/narayanibokde9/HackHaven-LETHAL/assets/116104916/676e05a6-6ff9-4348-832d-059bf5816c8f">
+#### Check All Proposals
+![image](https://github.com/ShauryaSwarup/Mozo-L-ETH-AL/assets/116101909/15cecac6-8838-46a9-a399-3209ec7035b5)
 
-#### List of all the issues
-<img width="960" alt="Screenshot 2024-03-21 231502" src="https://github.com/narayanibokde9/HackHaven-LETHAL/assets/116104916/87088821-e556-438e-808e-33a1496b780e">
+#### Proposal detail page
+![image](https://github.com/ShauryaSwarup/Mozo-L-ETH-AL/assets/116101909/94a4e3dc-f31f-400c-8dbc-14c69a9a8d85)
 
-#### Update status of an issue (Only by an employee)
+#### Proposal after execution
+![image](https://github.com/ShauryaSwarup/Mozo-L-ETH-AL/assets/116101909/4963c03a-954d-45f7-b775-e3cd528c4845)
 
-<img width="960" alt="Screenshot 2024-03-21 232117" src="https://github.com/narayanibokde9/HackHaven-LETHAL/assets/116104916/b4741ce3-2d2f-40a3-851b-e8e3744a1c49">
+#### Token transferred to resesarcher from treasury based on grant value (upon proposal execution)
+![image](https://github.com/ShauryaSwarup/Mozo-L-ETH-AL/assets/116101909/dedfe3af-7ccf-4696-ab99-9afaa3ebbff9)
 
-#### Status and details page of an issue
-<img width="960" alt="Screenshot 2024-03-21 232136" src="https://github.com/narayanibokde9/HackHaven-LETHAL/assets/116104916/a1273e06-5bdc-41c3-b7d2-dc94b436eda5">
+#### Proposal specific group chat page (real time chat using push protocol)
+![image](https://github.com/ShauryaSwarup/Mozo-L-ETH-AL/assets/116101909/b10a6d6c-2d80-452f-882a-f203648fb106)
 
-#### Instant notifications and group chat for discussion
-<img width="960" alt="Screenshot 2024-03-21 232625" src="https://github.com/narayanibokde9/HackHaven-LETHAL/assets/116104916/22e9d445-5afe-454a-bf80-e9428a1598cb">
+#### Your chats page for user to be able to check his/her chats
+![image](https://github.com/ShauryaSwarup/Mozo-L-ETH-AL/assets/116101909/74fed5a3-69ac-4f98-b696-f767bc2cd8e5)
 
-#### Real time chat
-<img width="468" alt="Screenshot 2024-03-21 232948" src="https://github.com/narayanibokde9/HackHaven-LETHAL/assets/116104916/75aa355c-5671-4962-874e-206887ccacbe">
+#### Leadership board to rank members in the DAO based on their participation
+![image](https://github.com/ShauryaSwarup/Mozo-L-ETH-AL/assets/116101909/95c86553-6b74-4e6f-bb67-77457719b9e8)
+
+#### Chatbot for document QnA built using Llama 2 LLM and Langchain+FAISS
+![Screenshot from 2024-03-29 11-18-55](https://github.com/ShauryaSwarup/Mozo-L-ETH-AL/assets/116101909/807dd43f-e473-4ad1-9f16-571360972018)
+
 
 ## 🤖Tech-Stack
 
@@ -151,9 +154,9 @@ The DOS DAO is a platform where researchers can securely store their data and co
 - ![Ethereum](https://img.shields.io/badge/Ethereum-3C3C3D?style=for-the-badge&logo=Ethereum&logoColor=white)
 
 ## 🔮Future Scope
-- Location Based Attendance: If worker within site radius, then mark as present.
-- Add more NFTs for higher Social Security.
-- Add Graphql Functionality for faster querying.
+- Wallet-less onboarding
+- Using Mistral 7b model for the chatbot along with discussion spaces
+- Using Chainlink Oracles for verifying user researcher role
 
 ## 🛠Project Setup
 1. Clone the repository
