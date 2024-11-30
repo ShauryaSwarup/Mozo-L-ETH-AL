@@ -42,7 +42,7 @@ const config = getDefaultConfig({
 		arbitrum,
 		base,
 		...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true"
-			? [sepolia, polygonMumbai]
+			? [sepolia, polygonMumbai, polygonAmoy]
 			: []),
 	],
 	ssr: true,
@@ -51,6 +51,7 @@ const config = getDefaultConfig({
 const queryClient = new QueryClient();
 
 import { createTheme, MantineProvider } from "@mantine/core";
+import { polygonAmoy } from "viem/chains";
 
 const theme = createTheme({
 	/** Put your mantine theme override here */
